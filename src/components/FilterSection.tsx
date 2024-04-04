@@ -1,114 +1,70 @@
-"use client"
-import { Select, Tabs } from '@mantine/core'
+import { RaceFilter, SexeFilter } from '@/interfaces/avatar';
+import { useFilter } from '@/providers/filter.provider';
+import { Select, Tabs, keys } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks';
-import React, { useState } from 'react';
-import FilterData from './FilterData';
-import { AvatarProps } from '@/interfaces/avatar'; 
+import React, { useEffect, useState } from 'react';
 
+interface FilterValueProp {
+  label: string;
+  value: string
+}
 
-const sexeFilter = [
+const sexeFilter: FilterValueProp[] = [
   { label: 'Tous', value: "*" },
-  { label: 'Homme', value: "male" },
-  { label: 'Femme', value: "female" },
+  { label: 'Homme', value: "homme" },
+  { label: 'Femme', value: "femme" },
 ]
 
-const raceFilter = [
+const raceFilter: FilterValueProp[] = [
   { label: 'Tous', value: "*" },
   { label: 'Afro', value: "afro" },
   { label: 'Asiat', value: "asiat" },
-  { label: 'Amérindien', value: "amérindien" },
+  { label: 'Amérindien', value: "amerindien" },
   { label: 'Caucasien', value: "caucasien" },
 ]
 
-const avatars: AvatarProps[] = [
-  { imgUrl: 'avatars/afro-H.svg', name: '', link: '', sexe: 'male', race: 'afro', author: 'Gilka' },
-  { imgUrl: 'avatars/amerindien-H.svg', name: '', link: '', sexe: 'male', race: 'amerindien', author: 'Gilka' },
-  { imgUrl: 'avatars/oceanien-H.svg', name: '', link: '', sexe: 'male', race: 'oceanien', author: 'Gilka' },
-  { imgUrl: 'avatars/caucasien-H.svg', name: '', link: '', sexe: 'male', race: 'caucasien', author: 'Gilka' },
-  { imgUrl: 'avatars/asiat-H.svg', name: '', link: '', sexe: 'male', race: 'asiat', author: 'Gilka' },
+export default function FilterSection({onFilterChange }: {onFilterChange: (filter: RaceFilter | SexeFilter) => void }) {
 
-  { imgUrl: 'avatars/afro-F.svg', name: '', link: '', sexe: 'female', race: 'afro', author: 'Gilka' },
-  { imgUrl: 'avatars/amerindien-F.svg', name: '', link: '', sexe: 'female', race: 'amerindien', author: 'Gilka' },
-  { imgUrl: 'avatars/oceanien-F.svg', name: '', link: '', sexe: 'female', race: 'oceanien', author: 'Gilka' },
-  { imgUrl: 'avatars/caucasien-F.svg', name: '', link: '', sexe: 'female', race: 'caucasien', author: 'Gilka' },
-  { imgUrl: 'avatars/asiat-F.svg', name: '', link: '', sexe: 'female', race: 'asiat', author: 'Gilka' },
-]
-
-
- enum Gender {
-  male = 'male', 
-  female = 'female',
-  both = '*'
- }
-
-
-export default function FilterSection() {
-
-  const [avatarsArr, setAvatarsArr] = useState<AvatarProps[]>(avatars); 
-
-  const [sexeFilterValue, setSexeFilterValue] = useState<"male" | "female" | "*">("*"); 
-
-  const [raceFilterValue, setRaceFilterValue] = useState("*"); 
-
-  const pull_data : any = (filterValue :"male" | "female", filterTitle: string) => {
-
-    if(filterTitle =="Sexe") {
-      setSexeFilterValue(filterValue); 
-    } else {
-      setRaceFilterValue(filterValue); 
-    }
-   
-   
-    if(sexeFilterValue !== "*") {
-      const filteredAvatar = avatars.filter((avatar) => avatar.sexe == filterValue) ;
-      setAvatarsArr(filteredAvatar);
-   } else 
-     setAvatarsArr(avatars);
-  
-
-    
-
-  }
-
+  const { race, sexe } = useFilter()
 
   return (
-
-
-    <section id='#avatars' className='w-full h-full flex-y_center gap-6 py-20'>
+    <section id='#avatars' className='w-full h-full flex-y_center gap-6 pt-10'>
       <h2 className="text-H2">Filtrer par:</h2>
-
-
-      <Filter filterTitle='Sexe' data={pull_data} filterArray={sexeFilter} />
-      <Filter filterTitle='Race' data={pull_data} filterArray={raceFilter} />
-
-      <FilterData data={avatarsArr} />
-
+      <Filter defaultValue={race} onChange={(filter) => onFilterChange(filter as RaceFilter | SexeFilter)} filterTitle='Sexe' filterArray={sexeFilter} />
+      <Filter defaultValue={sexe} onChange={(filter) => onFilterChange(filter as RaceFilter | SexeFilter)} filterTitle='Race' filterArray={raceFilter} />
     </section>
   )
 }
 
 
-function Filter({ filterArray, data , filterTitle }: { filterTitle: string, data : any , filterArray: { label: string, value: string }[] }) {
+function Filter({ filterArray, defaultValue, filterTitle, onChange }: { filterTitle: string, defaultValue: string, filterArray: FilterValueProp[], onChange: (filter: object) => void}) {
 
   const md = useMediaQuery("(min-width: 768px)");
 
-  const handleClick = (el : string , filterTitle : string ) => {
+  const [active, setActive] = useState<string | null>(defaultValue);
 
-    data(el, filterTitle); 
-     
+  function handleFilterChange(key: string, value: string | null){
+    let object: { [key: string]: string | null } = {};
+    object[key.toLocaleLowerCase()] = value;
+    setActive(value)
+    onChange(object)
   }
 
+  useEffect(() => {
+    handleFilterChange(defaultValue!, defaultValue!)
+  }, [defaultValue])
+  
 
   return (
     <>
       {md ?
         <span className='w-full px-4 flex-y_center gap-4'>
-          <p className="text-paragraph">{filterTitle}</p>
-          <Tabs defaultValue="*" unstyled >
+          {/* <p className="text-paragraph">{filterTitle}</p> */}
+          <Tabs value={active}   unstyled onChange={(value) => handleFilterChange(filterTitle, value) }>
             <Tabs.List>
               {
                 filterArray.map((el) => (
-                  <Tabs.Tab key={el.label} value={el.value} onClick={() => handleClick(el.value, filterTitle)} >
+                  <Tabs.Tab key={el.label} value={el.value} >
                     {el.label}
                   </Tabs.Tab>
                 ))
@@ -122,11 +78,11 @@ function Filter({ filterArray, data , filterTitle }: { filterTitle: string, data
           <Select
             size='md'
             defaultValue="*"
+            onChange={(value) => handleFilterChange(filterTitle, value) }
             placeholder="Sélectionnez un filtre"
             data={filterArray}
           />
         </hgroup>
-
       }
     </>
 

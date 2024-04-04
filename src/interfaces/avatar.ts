@@ -2,15 +2,15 @@ export interface AvatarProps {
   imgUrl: string;
   name: string;
   link: string;
-  sexe: 'male' | 'female' | '*';
-  race: 'caucasien' | 'oceanien' | 'afro' | 'asiat' | 'amerindien' | "*";
+  sexe: 'homme' | 'femme';
+  race: 'caucasien' | 'oceanien' | 'afro' | 'asiat' | 'amerindien';
   author: string
 }
 
-export interface Gender {
-  
-    male: 'male', 
-    female: 'female',
-    both: '*'
-   
+export interface RaceFilter {
+  race: string;
+}
+
+export interface SexeFilter {
+  sexe: string;
 }
