@@ -1,5 +1,5 @@
 import { AvatarProps } from "@/interfaces/avatar";
-import AvatarCard from "./UI/AvatarCard";
+import AvatarCard from "./UI/avatar-card/AvatarCard";
 import { ReactNode } from "react";
 interface Props {
     data: AvatarProps[];
