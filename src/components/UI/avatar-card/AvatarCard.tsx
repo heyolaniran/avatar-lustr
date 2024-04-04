@@ -1,9 +1,11 @@
 import { AvatarProps } from '@/interfaces/avatar';
-import { Avatar, Menu, Tooltip } from '@mantine/core'
+import { Avatar, Menu } from '@mantine/core'
 import React, { useState } from 'react'
 import { LuCopy, LuDownload } from "react-icons/lu";
 import { FaInstagram } from "react-icons/fa6";
 import { IoLogoLinkedin } from "react-icons/io5";
+import CopyMenu from './avatar-menu/CopyMenu';
+import DownloadMenu from './avatar-menu/DownloadMenu';
 
 function AuthorMenu({ }) {
   return (
@@ -21,14 +23,14 @@ function AuthorMenu({ }) {
           <FaInstagram size="1.5rem" />
           <IoLogoLinkedin size="1.5rem" />
         </hgroup>
-
       </span>
     </hgroup>
   )
 }
-export default function AvatarCard({ imgUrl, author }: AvatarProps) {
+export default function AvatarCard({ imgUrl, name, author, link }: AvatarProps) {
 
   const [show, setShow] = useState(false)
+
 
   return (
     <div
@@ -36,10 +38,9 @@ export default function AvatarCard({ imgUrl, author }: AvatarProps) {
       onMouseLeave={() => setShow(false)}
       className='relative cursor-pointer rounded-2xl lg:rounded-3xl px-4 py-2 bg-primary-medium flex-y_center w-full md:w-fit lg:!w-60 '>
       <span className="hidden lg:flex w-full relative h-6">
-        <button className={`${show ? 'opacity-100' : 'opacity-0'} absolute btn-icon right-0 top-4`} >
-          <LuCopy size="1.2rem" />
-        </button>
+        <CopyMenu imgUrl={imgUrl} show={show} />
       </span>
+
       <img className='w-28 md:w-36 mt-4 mb-8 lg:mt-0' src={imgUrl} />
       <span className="hidden absolute bottom-3 px-4 lg:flex justify-between items-center w-full mt-2">
         <button className={`${show ? 'opacity-100' : 'opacity-0'} lg:flex items-center gap-2 transition-opacity  cursor-pointer`} >
@@ -53,9 +54,9 @@ export default function AvatarCard({ imgUrl, author }: AvatarProps) {
           </Menu>
           <p className='font-medium text-sm'>{author}</p>
         </button>
-        <button className={`${show ? 'opacity-100' : 'opacity-0'} btn-icon`} >
-          <LuDownload size="1.2rem" />
-        </button>
+        <span>
+          <DownloadMenu name={name} imgUrl={imgUrl} show={show} />
+        </span>
       </span>
       <hgroup className='w-full flex justify-between lg:hidden' >
         <button className='btn-icon'>
